@@ -23,31 +23,33 @@ import java.io.*;
 
 public class EchoServant {
     final static String dir = System.getProperty("user.dir") + File.separator + "Echo";
+
+    final static String BasePath = Utils.GetWorkDirPath();
+    final static String CommandPath = BasePath + "Command";
+    final static String LogPath = BasePath + "Logs";
+
     public static void main(String[] args) {
         // TODO code application logic here
         FileWriter out = null;
-        //EchoService object = new EchoService();
-        //object.waitMethod();
-        Path myDir = Paths.get(dir);
-        try{
-            out = new FileWriter(System.getProperty("user.dir") + File.separator + "echologs.txt",true);
-        }
-        catch(Exception e){
-
-        }
         File directory = new File(dir);
-        if (! directory.exists()){
-            directory.mkdirs();
-            // If you require it to make the entire directory path including parents,
-            // use directory.mkdirs(); here instead.
+        File dirCommand = new File(CommandPath);
+        File dirLog = new File(LogPath);
+
+        // Create Command and Log folders if they dont exist.
+
+        if (! dirCommand.exists()){
+            dirCommand.mkdirs();
         }
-        System.out.println("current dir = " + dir);
+
+        if (! dirLog.exists()){
+            dirLog.mkdirs();
+        }
 
         try{
             WatchService watchService
                     = FileSystems.getDefault().newWatchService();
 
-            Path path = Paths.get(dir);
+            Path path = Paths.get(CommandPath);
             path.register(
                     watchService,
                     StandardWatchEventKinds.ENTRY_CREATE,
@@ -55,15 +57,13 @@ public class EchoServant {
             WatchKey key;
             while ((key = watchService.take()) != null) {
                 for (WatchEvent<?> event : key.pollEvents()) {
-                    // System.out.println(
-                    // "Event kind:" + event.kind()
-                    // + ". File affected: " + event.context() + ".");
                     if(event.kind().name().equalsIgnoreCase("ENTRY_CREATE")) {
                         System.out.println("Caught File Create. File Name : " + event.context());
-                        EchoRaida(event.context().toString(),out);
+                        if(IsCommand(event.context().toString()))
+                            EchoRaida(event.context().toString(),out);
                         out.write("Caught File Create. File Name : " + event.context());
                         out.flush();
-                        File fDel = new File(dir+ File.separator+ event.context());
+                        File fDel = new File(CommandPath+ File.separator+ event.context());
                         fDel.delete();
                         //out.close();
                     }
@@ -79,6 +79,10 @@ public class EchoServant {
 
     }
 
+    private static boolean IsCommand(String FileName) {
+
+        return  true;
+    }
 
     public static String EchoRaida(String fileName,FileWriter out) {
         System.out.println("Starting Echo to RAIDA Network 1");

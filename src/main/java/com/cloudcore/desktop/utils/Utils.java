@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -15,6 +16,10 @@ import java.util.Date;
 public class Utils {
 
 
+    public static String GetWorkDirPath() {
+
+        return System.getProperty("user.dir") + File.separator;
+    }
     /* Fields */
 
     public static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'kk:mm:ss.SSSSSSSXXX");
