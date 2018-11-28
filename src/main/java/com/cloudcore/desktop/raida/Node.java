@@ -56,7 +56,7 @@ public class Node {
     public Node(int NodeNumber, RAIDANode node) {
         this.nodeNumber = NodeNumber;
         fullUrl = "https://" + node.urls[0].url + "/service/";
-
+        fullUrl = getFullURL();
         client = asyncHttpClient();
         gson = Utils.createGson();
     }

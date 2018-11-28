@@ -48,6 +48,12 @@ public class EchoServant {
             dirLog.mkdirs();
         }
 
+        EchoRaida("",out);
+
+    }
+
+
+    public void test() {
         SimpleLogger.writeLog("ServantEchoerStarted", "");
         System.out.println("Echoer Started");
 
@@ -91,9 +97,7 @@ public class EchoServant {
             System.out.println(e.getMessage());
         }
 
-
     }
-
     private static boolean IsCommand(String FileName) {
 
         return  true;
@@ -106,14 +110,15 @@ public class EchoServant {
         ArrayList<CompletableFuture<Response>> tasks = raida.getEchoTasks();
 
         try{
-            out.write("Starting Echo to RAIDA Network 1\n");
-            out.write("----------------------------------\n");
             CompletableFuture.allOf(tasks.toArray(new CompletableFuture[0])).get();
 
             System.out.println("Ready Count - " + raida.getReadyCount());
             System.out.println("Not Ready Count - " + raida.getNotReadyCount());
             System.out.println(" ---------------------------------------------------------------------------------------------\n");
             System.out.println(" | Server   | Status | Message                               | Version | Time                |\n");
+
+            out.write("Starting Echo to RAIDA Network 1\n");
+            out.write("----------------------------------\n");
 
             out.write("Ready Count - " + raida.getReadyCount());
             out.write("Not Ready Count - " + raida.getNotReadyCount());
