@@ -50,26 +50,45 @@ public class EchoServant {
 
         SimpleLogger.writeLog("ServantEchoerStarted", "");
         System.out.println("Echoer Started");
-        while (true) {
-            try {
-                com.cloudcore.desktop.core.FileSystem.createDirectories();
 
-                FolderWatcher watcher = new FolderWatcher(FileSystem.CommandFolder);
-                boolean stop = false;
+        try{
+            WatchService watchService
+                    = FileSystems.getDefault().newWatchService();
 
-                if (0 != com.cloudcore.desktop.core.FileSystem.getTotalCoinsBank(com.cloudcore.desktop.core.FileSystem.DetectedFolder)[5])
-                {
-                }
+            Path path = Paths.get(FileSystem.CommandFolder);
+            path.register(
+                    watchService,
+                    StandardWatchEventKinds.ENTRY_CREATE,
+                    StandardWatchEventKinds.ENTRY_DELETE);
+            WatchKey key;
+            while ((key = watchService.take()) != null) {
+                for (WatchEvent<?> event : key.pollEvents()) {
+                    // System.out.println(
+                    // "Event kind:" + event.kind()
+                    // + ". File affected: " + event.context() + ".");
+                    if(event.kind().name().equalsIgnoreCase("ENTRY_CREATE")) {
+                        System.out.println("Caught File Create. File Name : " + event.context());
+                        String NewFileName = event.context().toString();
+                        if(NewFileName.contains("echo.txt")) {
+                            System.out.println("Echo Command Recieved");
+                            //EchoRaida(NewFileName,out);
+                            System.out.println(FileSystem.CommandFolder+ File.separator+ event.context().toString());
 
-                while (!stop) {
-                    if (watcher.newFileDetected()) {
-                        System.out.println(Instant.now().toString() + ": Echoing RAIDA");
-                        System.out.println("Echoing RAIDA");
+                            File fDel = new File(FileSystem.CommandFolder+ File.separator+ event.context().toString());
+                            fDel.delete();
+                            System.out.println("Deleted");
+                        }
+
+
+                        //out.close();
                     }
                 }
-            } catch (Exception e) {
-                System.out.println("Uncaught exception - " + e.getLocalizedMessage());
+                key.reset();
             }
+
+        }
+        catch(Exception e){
+            System.out.println(e.getMessage());
         }
 
 
