@@ -156,7 +156,7 @@ public class RAIDA {
 
     public static void updateLog(String message) {
         System.out.println(message);
-        logger.Info(message);
+        //logger.Info(message);
     }
 }
 

@@ -40,20 +40,6 @@ public class CloudCoin {
     public transient String currentFilename;
 
 
-    /* Constructors */
-
-    /**
-     * Simple CloudCoin constructor for setting the filepath of the coin. This is used when deleting or renaming a file.
-     *
-     * @param folder   the folder containing the Stack file.
-     * @param filename the absolute filepath of the Stack file.
-     */
-    public CloudCoin(String folder, String filename) {
-        this.folder = folder;
-        this.currentFilename = filename;
-    }
-
-
     /* Methods */
 
     @Override
@@ -79,16 +65,5 @@ public class CloudCoin {
     public ArrayList<String> getAoid() { return aoid; }
     public String getFolder() { return folder; }
 
-    public void setNn(int nn) { this.nn = nn; }
-    public void setSn(int sn) { this.sn = sn; }
-    public void setAn(ArrayList<String> an) { this.an = an; }
-    public void setEd(String ed) { this.ed = ed; }
-    public void setPown(String pown) { this.pown = pown; }
-    public void setAoid(ArrayList<String> aoid) { this.aoid = aoid; }
     public void setFolder(String folder) { this.folder = folder; }
-    public void setFullFilePath(String fullFilePath) {
-        int separator = fullFilePath.lastIndexOf(File.separatorChar);
-        folder = fullFilePath.substring(0, separator);
-        currentFilename = fullFilePath.substring(separator);
-    }
 }

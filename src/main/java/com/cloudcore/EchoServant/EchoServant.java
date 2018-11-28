@@ -1,5 +1,7 @@
 package com.cloudcore.EchoServant;
 
+import com.cloudcore.desktop.FolderWatcher;
+import com.cloudcore.desktop.core.FileSystem;
 import com.cloudcore.desktop.raida.RAIDA;
 import com.cloudcore.desktop.raida.Response;
 import com.cloudcore.desktop.raida.ServiceResponse;
@@ -8,6 +10,7 @@ import com.cloudcore.desktop.utils.Utils;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.nio.file.FileSystems;
+import java.time.Instant;
 import java.util.Calendar;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -45,35 +48,28 @@ public class EchoServant {
             dirLog.mkdirs();
         }
 
-        try{
-            WatchService watchService
-                    = FileSystems.getDefault().newWatchService();
+        SimpleLogger.writeLog("ServantEchoerStarted", "");
+        System.out.println("Echoer Started");
+        while (true) {
+            try {
+                com.cloudcore.desktop.core.FileSystem.createDirectories();
 
-            Path path = Paths.get(CommandPath);
-            path.register(
-                    watchService,
-                    StandardWatchEventKinds.ENTRY_CREATE,
-                    StandardWatchEventKinds.ENTRY_DELETE);
-            WatchKey key;
-            while ((key = watchService.take()) != null) {
-                for (WatchEvent<?> event : key.pollEvents()) {
-                    if(event.kind().name().equalsIgnoreCase("ENTRY_CREATE")) {
-                        System.out.println("Caught File Create. File Name : " + event.context());
-                        if(IsCommand(event.context().toString()))
-                            EchoRaida(event.context().toString(),out);
-                        out.write("Caught File Create. File Name : " + event.context());
-                        out.flush();
-                        File fDel = new File(CommandPath+ File.separator+ event.context());
-                        fDel.delete();
-                        //out.close();
+                FolderWatcher watcher = new FolderWatcher(FileSystem.CommandFolder);
+                boolean stop = false;
+
+                if (0 != com.cloudcore.desktop.core.FileSystem.getTotalCoinsBank(com.cloudcore.desktop.core.FileSystem.DetectedFolder)[5])
+                {
+                }
+
+                while (!stop) {
+                    if (watcher.newFileDetected()) {
+                        System.out.println(Instant.now().toString() + ": Echoing RAIDA");
+                        System.out.println("Echoing RAIDA");
                     }
                 }
-                key.reset();
+            } catch (Exception e) {
+                System.out.println("Uncaught exception - " + e.getLocalizedMessage());
             }
-
-        }
-        catch(Exception e){
-            System.out.println(e.getMessage());
         }
 
 
@@ -142,7 +138,7 @@ public class EchoServant {
                 response.message = "Not enough RAIDA servers can be contacted to import new coins.";
             }
 
-            new SimpleLogger().LogGoodCall(Utils.createGson().toJson(response));
+            //new SimpleLogger().LogGoodCall(Utils.createGson().toJson(response));
             return Utils.createGson().toJson(response);
 
         }
