@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.io.*;
-
+import javax.net.ssl.HttpsURLConnection;
 public class EchoServant {
     final static String dir = System.getProperty("user.dir") + File.separator + "Echo";
 
@@ -47,13 +47,7 @@ public class EchoServant {
         if (! dirLog.exists()){
             dirLog.mkdirs();
         }
-
-        EchoRaida("",out);
-
-    }
-
-
-    public void test() {
+        FileSystem.createDirectories();
         SimpleLogger.writeLog("ServantEchoerStarted", "");
         System.out.println("Echoer Started");
 
@@ -77,7 +71,7 @@ public class EchoServant {
                         String NewFileName = event.context().toString();
                         if(NewFileName.contains("echo.txt")) {
                             System.out.println("Echo Command Recieved");
-                            //EchoRaida(NewFileName,out);
+                            EchoRaida(NewFileName,out);
                             System.out.println(FileSystem.CommandFolder+ File.separator+ event.context().toString());
 
                             File fDel = new File(FileSystem.CommandFolder+ File.separator+ event.context().toString());
@@ -98,8 +92,8 @@ public class EchoServant {
         }
 
     }
-    private static boolean IsCommand(String FileName) {
 
+    private static boolean IsCommand(String FileName) {
         return  true;
     }
 
@@ -117,35 +111,23 @@ public class EchoServant {
             System.out.println(" ---------------------------------------------------------------------------------------------\n");
             System.out.println(" | Server   | Status | Message                               | Version | Time                |\n");
 
-            out.write("Starting Echo to RAIDA Network 1\n");
-            out.write("----------------------------------\n");
-
-            out.write("Ready Count - " + raida.getReadyCount());
-            out.write("Not Ready Count - " + raida.getNotReadyCount());
-            out.write(" ---------------------------------------------------------------------------------------------\n");
-            out.write(" | Server   | Status | Message                               | Version | Time                |\n");
+//            out.write("Starting Echo to RAIDA Network 1\n");
+//            out.write("----------------------------------\n");
+//
+//            out.write("Ready Count - " + raida.getReadyCount());
+//            out.write("Not Ready Count - " + raida.getNotReadyCount());
+//            out.write(" ---------------------------------------------------------------------------------------------\n");
+//            out.write(" | Server   | Status | Message                               | Version | Time                |\n");
 
             for (int i = 0; i < raida.nodes.length; i++) {
-                String idWhitespace = ((i+1) > 9) ? " " : "  ";
-                String time = Long.toString(raida.nodes[i].responseTime);
-                time = (time.length() < 4) ? "0." + time : time.substring(0, time.length() - 3) + '.' + time.substring(time.length() - 3);
 
-                System.out.println(" ---------------------------------------------------------------------------------------------\n");
-                out.write(" ---------------------------------------------------------------------------------------------\n");
-                out.write(" | RAIDA " + (i+1) + idWhitespace +
-                        "| " + raida.nodes[i].RAIDANodeStatus +
-                        " | " + "Execution Time (milliseconds) = " + time +
-                        " |  " + ServiceResponse.version +
-                        " | " + Utils.getSimpleDate() + " |\n");
-
-                System.out.println(" | RAIDA " + (i+1) + idWhitespace +
-                        "| " + raida.nodes[i].RAIDANodeStatus +
-                        " | " + "Execution Time (milliseconds) = " + time +
-                        " |  " + ServiceResponse.version +
-                        " | " + Utils.getSimpleDate() + " |");
+                System.out.println(FileSystem.EchoerLogsFolder + File.separator + GetLogFileName(i));
+                PrintWriter writer = new PrintWriter(FileSystem.EchoerLogsFolder + File.separator + GetLogFileName(i), "UTF-8");
+                writer.println(RAIDA.getInstance().nodes[i].RAIDANodeStatus.toString());
+                writer.close();
             }
             System.out.println(" ---------------------------------------------------------------------------------------------");
-            out.write(" ---------------------------------------------------------------------------------------------\n");
+            //out.write(" ---------------------------------------------------------------------------------------------\n");
 
             int readyCount = raida.getReadyCount();
 
@@ -178,6 +160,9 @@ public class EchoServant {
         return "";
     }
 
+    private static String GetLogFileName(int num) {
+        return String.valueOf(num) + ".1."+ RAIDA.getInstance().nodes[num].RAIDANodeStatus.toString() +".txt";
+    }
     private synchronized void waitMethod() {
 
         while (true) {

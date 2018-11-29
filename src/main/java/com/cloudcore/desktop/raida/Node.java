@@ -102,6 +102,7 @@ public class Node {
             long before = System.currentTimeMillis();
             failsEcho = true;
             try {
+                //System.out.println("Full Request-" + echoResponse.fullRequest);
                 echoResponse.fullResponse = Utils.getHtmlFromURL(echoResponse.fullRequest);
                 //System.out.println("Echo From Node - " + nodeNumber + ". " + echoResponse.fullResponse);
                 //System.out.println("Echo URL - "+ fullUrl);

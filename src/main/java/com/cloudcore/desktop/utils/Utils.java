@@ -4,15 +4,14 @@ import com.cloudcore.desktop.core.Config;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import javax.net.ssl.HttpsURLConnection;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
+import java.net.URL;
+import java.io.*;
 public class Utils {
 
 
@@ -59,7 +58,9 @@ public class Utils {
         try {
             URL url = new URL(urlAddress);
             HttpURLConnection connect = (HttpURLConnection) url.openConnection();
+            connect.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/24.0.1271.95 Safari/537.11");
             connect.setConnectTimeout(Config.milliSecondsToTimeOutDetect);
+            //System.out.println("Response Code "+ connect.getResponseCode());
             if (200 != connect.getResponseCode())
                 return data;
 

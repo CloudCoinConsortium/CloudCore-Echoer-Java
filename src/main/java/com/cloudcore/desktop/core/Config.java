@@ -19,6 +19,7 @@ public class Config {
     public static final String TAG_RECEIPTS = "Receipts";
     public static final String URL_DIRECTORY = "";
     public static final String TAG_COMMAND = "Command";
+    public static final String TAG_ECHOER = "Echoer";
 
 
     /* Fields */

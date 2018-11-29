@@ -34,7 +34,7 @@ public class FileSystem {
     public static String ReceiptsFolder = RootPath + Config.TAG_RECEIPTS + File.separator;
     public static String CommandFolder = BasePath + File.separator + Config.TAG_COMMAND;
     public static String MainLogsFolder = BasePath +File.separator + Config.TAG_LOGS ;
-
+    public static String EchoerLogsFolder = BasePath +File.separator + Config.TAG_LOGS + File.separator + Config.TAG_ECHOER;
 
     /* Methods */
 
@@ -50,6 +50,7 @@ public class FileSystem {
             Files.createDirectories(Paths.get(ReceiptsFolder));
             Files.createDirectories(Paths.get(CommandFolder));
             Files.createDirectories(Paths.get(MainLogsFolder));
+            Files.createDirectories(Paths.get(EchoerLogsFolder));
 
 
         } catch (Exception e) {
