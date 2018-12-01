@@ -15,4 +15,5 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.2'
     compile 'org.asynchttpclient:async-http-client-example:2.5.4'
     compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.+'
+    compile 'org.json:json:20171018'
 }

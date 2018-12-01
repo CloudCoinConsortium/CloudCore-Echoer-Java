@@ -4,6 +4,7 @@ import com.cloudcore.desktop.utils.Utils;
 import com.google.gson.Gson;
 import org.asynchttpclient.*;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
 
@@ -13,6 +14,8 @@ import static org.asynchttpclient.Dsl.asyncHttpClient;
  * This Class Contains the properties of a RAIDA node.
  */
 public class Node {
+
+    public String ms;
 
     public enum NodeStatus {
         Ready,
@@ -38,6 +41,7 @@ public class Node {
     public TicketHistory ticketHistory = TicketHistory.Untried;
     public String ticket = "";
     public boolean hasTicket;
+    public int NetworkNumber = 1;
 
     public NodeStatus RAIDANodeStatus = NodeStatus.NotReady;
 
@@ -51,6 +55,7 @@ public class Node {
 
         client = asyncHttpClient();
         gson = Utils.createGson();
+        this.NetworkNumber = 1;
     }
 
     public Node(int NodeNumber, RAIDANode node) {
@@ -59,6 +64,7 @@ public class Node {
         fullUrl = getFullURL();
         client = asyncHttpClient();
         gson = Utils.createGson();
+        this.NetworkNumber = 1;
     }
 
 
@@ -66,6 +72,17 @@ public class Node {
 
     public String getFullURL() {
         return "https://raida" + (nodeNumber - 1) + ".cloudcoin.global/service/";
+    }
+
+    public void switchToRealHost() {
+        this.fullUrl = "https://raida" + nodeNumber + ".cloudcoin.global/service/";
+        this.NetworkNumber = 1;
+    }
+
+    /** Sets the RAIDA to the test server. */
+    public void switchToFakeHost() {
+        this.fullUrl = "https://raida" + nodeNumber + "-net2.cloudcoin.global/service/";
+        this.NetworkNumber =2;
     }
 
     public void resetTicket() {
@@ -101,11 +118,13 @@ public class Node {
             echoResponse.fullRequest = this.fullUrl + "echo";
             long before = System.currentTimeMillis();
             failsEcho = true;
+            long start=0;
+
             try {
                 //System.out.println("Full Request-" + echoResponse.fullRequest);
                 echoResponse.fullResponse = Utils.getHtmlFromURL(echoResponse.fullRequest);
-                //System.out.println("Echo From Node - " + nodeNumber + ". " + echoResponse.fullResponse);
-                //System.out.println("Echo URL - "+ fullUrl);
+                start = System.nanoTime();
+
                 if (echoResponse.fullResponse.contains("ready")) {
                     echoResponse.success = true;
                     echoResponse.outcome = "ready";
@@ -130,6 +149,9 @@ public class Node {
             responseTime = after - before;
             echoResponse.milliseconds = (int) responseTime;
             //System.out.println("Echo Complete-Node No.-" + NodeNumber + ".Status-" + RAIDANodeStatus);
+            long end = System.nanoTime();
+            this.ms = "" + new DecimalFormat("####.###").format((end - start) * 0.000001f);
+
             return echoResponse;
         });
     }

@@ -1,7 +1,9 @@
 package com.cloudcore.EchoServant;
 
 import com.cloudcore.desktop.FolderWatcher;
+import com.cloudcore.desktop.core.Config;
 import com.cloudcore.desktop.core.FileSystem;
+import com.cloudcore.desktop.raida.Node;
 import com.cloudcore.desktop.raida.RAIDA;
 import com.cloudcore.desktop.raida.Response;
 import com.cloudcore.desktop.raida.ServiceResponse;
@@ -11,6 +13,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.nio.file.FileSystems;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -30,7 +33,7 @@ public class EchoServant {
     final static String BasePath = Utils.GetWorkDirPath();
     final static String CommandPath = BasePath + "Command";
     final static String LogPath = BasePath + "Logs";
-
+    public static int networkNumber = 1;
     public static void main(String[] args) {
         // TODO code application logic here
         FileWriter out = null;
@@ -38,6 +41,11 @@ public class EchoServant {
         File dirCommand = new File(CommandPath);
         File dirLog = new File(LogPath);
 
+        System.out.println("Command Line Argument " + args.length);
+        if(args.length>0)
+            networkNumber = Integer.parseInt(args[0]);
+
+        //networkNumber =2;
         // Create Command and Log folders if they dont exist.
 
         if (! dirCommand.exists()){
@@ -71,7 +79,7 @@ public class EchoServant {
                         String NewFileName = event.context().toString();
                         if(NewFileName.contains("echo.txt")) {
                             System.out.println("Echo Command Recieved");
-                            EchoRaida(NewFileName,out);
+                            EchoRaida();
                             System.out.println(FileSystem.CommandFolder+ File.separator+ event.context().toString());
 
                             File fDel = new File(FileSystem.CommandFolder+ File.separator+ event.context().toString());
@@ -97,11 +105,18 @@ public class EchoServant {
         return  true;
     }
 
-    public static String EchoRaida(String fileName,FileWriter out) {
+    public static String EchoRaida() {
         System.out.println("Starting Echo to RAIDA Network 1");
         System.out.println("----------------------------------");
         RAIDA raida = RAIDA.getInstance();
+
+        if(networkNumber == 2)
+        for(int i=0;i< Config.nodeCount;i++) {
+            RAIDA.getInstance().nodes[i].switchToFakeHost();
+        }
+
         ArrayList<CompletableFuture<Response>> tasks = raida.getEchoTasks();
+
 
         try{
             CompletableFuture.allOf(tasks.toArray(new CompletableFuture[0])).get();
@@ -111,13 +126,7 @@ public class EchoServant {
             System.out.println(" ---------------------------------------------------------------------------------------------\n");
             System.out.println(" | Server   | Status | Message                               | Version | Time                |\n");
 
-//            out.write("Starting Echo to RAIDA Network 1\n");
-//            out.write("----------------------------------\n");
-//
-//            out.write("Ready Count - " + raida.getReadyCount());
-//            out.write("Not Ready Count - " + raida.getNotReadyCount());
-//            out.write(" ---------------------------------------------------------------------------------------------\n");
-//            out.write(" | Server   | Status | Message                               | Version | Time                |\n");
+            Arrays.stream(new File(FileSystem.EchoerLogsFolder).listFiles()).forEach(File::delete);
 
             for (int i = 0; i < raida.nodes.length; i++) {
 
@@ -127,7 +136,6 @@ public class EchoServant {
                 writer.close();
             }
             System.out.println(" ---------------------------------------------------------------------------------------------");
-            //out.write(" ---------------------------------------------------------------------------------------------\n");
 
             int readyCount = raida.getReadyCount();
 
@@ -144,7 +152,6 @@ public class EchoServant {
                 response.message = "Not enough RAIDA servers can be contacted to import new coins.";
             }
 
-            //new SimpleLogger().LogGoodCall(Utils.createGson().toJson(response));
             return Utils.createGson().toJson(response);
 
         }
@@ -161,7 +168,9 @@ public class EchoServant {
     }
 
     private static String GetLogFileName(int num) {
-        return String.valueOf(num) + ".1."+ RAIDA.getInstance().nodes[num].RAIDANodeStatus.toString() +".txt";
+        Node node = RAIDA.getInstance().nodes[num];
+        return String.valueOf(num) + "."+ node.NetworkNumber +"."+ node.RAIDANodeStatus.toString() + "."+
+                node.responseTime +"." + node.ms +".txt";
     }
     private synchronized void waitMethod() {
 
