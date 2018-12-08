@@ -9,7 +9,7 @@ public class Response {
     public boolean success;
     public String outcome;
     public int milliseconds;
-
+    public String internalExecutionTime = "";
     public Response() {
         this.success = false;
         this.outcome = "not used";

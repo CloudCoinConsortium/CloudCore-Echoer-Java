@@ -33,7 +33,6 @@ public class EchoServant {
     final static String BasePath = Utils.GetWorkDirPath();
     final static String CommandPath = BasePath + "Command";
     final static String LogPath = BasePath + "Logs";
-    public static int networkNumber = 1;
     public static void main(String[] args) {
         // TODO code application logic here
         FileWriter out = null;
@@ -41,11 +40,7 @@ public class EchoServant {
         File dirCommand = new File(CommandPath);
         File dirLog = new File(LogPath);
 
-        System.out.println("Command Line Argument " + args.length);
-        if(args.length>0)
-            networkNumber = Integer.parseInt(args[0]);
 
-        //networkNumber =2;
         // Create Command and Log folders if they dont exist.
 
         if (! dirCommand.exists()){
@@ -80,6 +75,7 @@ public class EchoServant {
                         if(NewFileName.contains("echo.txt")) {
                             System.out.println("Echo Command Recieved");
                             EchoRaida();
+
                             System.out.println(FileSystem.CommandFolder+ File.separator+ event.context().toString());
 
                             File fDel = new File(FileSystem.CommandFolder+ File.separator+ event.context().toString());
@@ -101,19 +97,10 @@ public class EchoServant {
 
     }
 
-    private static boolean IsCommand(String FileName) {
-        return  true;
-    }
-
     public static String EchoRaida() {
         System.out.println("Starting Echo to RAIDA Network 1");
         System.out.println("----------------------------------");
         RAIDA raida = RAIDA.getInstance();
-
-        if(networkNumber == 2)
-        for(int i=0;i< Config.nodeCount;i++) {
-            RAIDA.getInstance().nodes[i].switchToFakeHost();
-        }
 
         ArrayList<CompletableFuture<Response>> tasks = raida.getEchoTasks();
 
@@ -132,7 +119,7 @@ public class EchoServant {
 
                 System.out.println(FileSystem.EchoerLogsFolder + File.separator + GetLogFileName(i));
                 PrintWriter writer = new PrintWriter(FileSystem.EchoerLogsFolder + File.separator + GetLogFileName(i), "UTF-8");
-                writer.println(RAIDA.getInstance().nodes[i].RAIDANodeStatus.toString());
+                writer.println(RAIDA.getInstance().nodes[i].fullUrl);
                 writer.close();
             }
             System.out.println(" ---------------------------------------------------------------------------------------------");
@@ -169,8 +156,8 @@ public class EchoServant {
 
     private static String GetLogFileName(int num) {
         Node node = RAIDA.getInstance().nodes[num];
-        return String.valueOf(num) + "."+ node.NetworkNumber +"."+ node.RAIDANodeStatus.toString() + "."+
-                node.responseTime +"." + node.ms +".txt";
+        return String.valueOf(num) + "_"+ node.RAIDANodeStatus.toString() + "_"+
+                node.responseTime +"_" + node.internalExecutionTime +".txt";
     }
     private synchronized void waitMethod() {
 

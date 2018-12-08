@@ -6,6 +6,7 @@ import org.asynchttpclient.*;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
 
 import static org.asynchttpclient.Dsl.asyncHttpClient;
@@ -16,7 +17,7 @@ import static org.asynchttpclient.Dsl.asyncHttpClient;
 public class Node {
 
     public String ms;
-
+    public String internalExecutionTime = "";
     public enum NodeStatus {
         Ready,
         NotReady,
@@ -123,6 +124,13 @@ public class Node {
             try {
                 //System.out.println("Full Request-" + echoResponse.fullRequest);
                 echoResponse.fullResponse = Utils.getHtmlFromURL(echoResponse.fullRequest);
+
+                Gson gson = new Gson();
+                Properties data = gson.fromJson(echoResponse.fullResponse, Properties.class);
+                System.out.println(echoResponse.fullResponse + data.getProperty("message"));
+                String message = data.getProperty("message");
+                this.internalExecutionTime = data.getProperty("message").substring(message.lastIndexOf("=")+1).trim();
+                //System.out.println(echoResponse.internalExecutionTime);
                 start = System.nanoTime();
 
                 if (echoResponse.fullResponse.contains("ready")) {
