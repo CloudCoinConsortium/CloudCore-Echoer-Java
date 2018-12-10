@@ -1,0 +1,10 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="com.cloudcore.EchoServant:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/com_cloudcore_EchoServant_jar</output-path>
+    <root id="archive" name="com.cloudcore.EchoServant.jar">
+      <element id="directory" name="META-INF">
+        <element id="file-copy" path="$PROJECT_DIR$/META-INF/MANIFEST.MF" />
+      </element>
+    </root>
+  </artifact>
+</component>

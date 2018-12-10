@@ -43,7 +43,7 @@ public class Node {
     public String ticket = "";
     public boolean hasTicket;
     public int NetworkNumber = 1;
-
+    public Response echoResponse;
     public NodeStatus RAIDANodeStatus = NodeStatus.NotReady;
 
     public long responseTime;
@@ -129,6 +129,8 @@ public class Node {
                 Properties data = gson.fromJson(echoResponse.fullResponse, Properties.class);
                 System.out.println(echoResponse.fullResponse + data.getProperty("message"));
                 String message = data.getProperty("message");
+                echoResponse.timestamp = data.getProperty("time");
+
                 this.internalExecutionTime = data.getProperty("message").substring(message.lastIndexOf("=")+1).trim();
                 //System.out.println(echoResponse.internalExecutionTime);
                 start = System.nanoTime();
@@ -159,7 +161,7 @@ public class Node {
             //System.out.println("Echo Complete-Node No.-" + NodeNumber + ".Status-" + RAIDANodeStatus);
             long end = System.nanoTime();
             this.ms = "" + new DecimalFormat("####.###").format((end - start) * 0.000001f);
-
+            this.echoResponse = echoResponse;
             return echoResponse;
         });
     }

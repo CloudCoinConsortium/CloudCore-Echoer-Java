@@ -9,6 +9,8 @@ public class Response {
     public boolean success;
     public String outcome;
     public int milliseconds;
+    public String timestamp;
+
     public String internalExecutionTime = "";
     public Response() {
         this.success = false;
